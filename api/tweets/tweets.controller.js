@@ -11,12 +11,6 @@ var TWEETschema = mongoose.Schema({
     owner: String,
     createdAt: Number
 });
-var USERschema = mongoose.Schema({
-    username: String,
-    name: String,
-    email: String,
-    tweets: Array
-});
 
 var tweet = mongoose.model('tweet', TWEETschema);
 var tweets;
@@ -25,7 +19,7 @@ tweet.find({}, (err, res) => {
     tweets = res;
 })
 
-var user = mongoose.model('user', USERschema);
+var user = mongoose.model('user');
 var users;
 
 user.find({}, (err, res) => {
@@ -41,9 +35,16 @@ function create(req, res) {
         text.id = (Math.max(...ids)) + 1;
         text.createdAt = utcDate;
         userPos = buscaUser(text.owner);
+        console.log(users);
         if (userPos != null) {
             tweets.push(text);
+            var nuevo = new tweet(text);
+            nuevo.save();
             users[userPos].tweets.push(text.id);
+            user.findOne({ "username": text.owner }, (err, doc) => {
+                doc.tweets = users.tweets;
+                doc.save();
+            })
             return res.json(text);
         } else {
             return res.json(false);
@@ -52,27 +53,30 @@ function create(req, res) {
 }
 
 function getById(req, res) {
-    const id = req.params.id;
-    for (let i = 0; i < tweets.length; i++) {
-        console.log(tweets[i].id);
-        if (tweets[i].id == id) {
-            return res.json(tweets[i]);
-
+    setTimeout(function () {
+        const id = req.params.id;
+        for (let i = 0; i < tweets.length; i++) {
+            if (tweets[i].id == id) {
+                return res.json(tweets[i]);
+            }
         }
-    }
-    return res.json(false);
+        return res.json(false);
+    }, 1000);
 }
 
 function deleteById(req, res) {
-    const id = req.params.id;
-    for (let i = 0; i < tweets.length; i++) {
-        if (tweets[i].id == id) {
-            tweets.splice(i, 1);
-            return res.json(true);
+    setTimeout(function () {
+        const id = req.params.id;
+        for (let i = 0; i < tweets.length; i++) {
+            if (tweets[i].id == id) {
+                tweets.splice(i, 1);
+                tweet.find({ "id": id }).remove().exec();
+                return res.json(true);
 
+            }
         }
-    }
-    return res.json(false);
+        return res.json(false);
+    }, 1000);
 }
 
 function buscaUser(user) {
