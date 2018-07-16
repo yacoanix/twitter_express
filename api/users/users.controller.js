@@ -1,17 +1,10 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/twitter');
 
 module.exports.getAll = getAll;
 module.exports.deleteByUs = deleteByUs;
 module.exports.create = create;
 module.exports.update = update;
-var USERschema = mongoose.Schema({
-    username: String,
-    name: String,
-    email: String,
-    tweets: Array
-});
-var user = mongoose.model('user', USERschema);
+
+let user = require('./users.model');
 var users;
 
 user.find({}, (err, res) => {
@@ -19,9 +12,10 @@ user.find({}, (err, res) => {
 })
 
 
-function getAll(req, resp) {
+function getAll(req, res) {
     setTimeout(function () {
-        return resp.json(users);
+        //return resp.json(users);
+        res.render('users/user', {users : users})
     }, 1000);
 }
 
@@ -40,7 +34,7 @@ function deleteByUs(req, res) {
 
 }
 
-function create(req, res) {
+function create(req, res) {         
     setTimeout(function () {
         const newUser = req.body;
         for (let i = 0; i < users.length; i++) {

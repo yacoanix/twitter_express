@@ -1,18 +1,8 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/twitter');
-
 module.exports.deleteById = deleteById;
 module.exports.create = create;
 module.exports.getById = getById;
 
-var TWEETschema = mongoose.Schema({
-    id: Number,
-    tweet: String,
-    owner: String,
-    createdAt: Number
-});
-
-var tweet = mongoose.model('tweet', TWEETschema);
+var tweet = require('./users.model');
 var tweets;
 
 tweet.find({}, (err, res) => {
